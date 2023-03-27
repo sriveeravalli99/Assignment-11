@@ -1,0 +1,50 @@
+---
+title: "Bug Fix"
+author: "Yamini"
+date: "2023-03-27"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Debugging
+
+Find the bug in below code.
+
+tukey_multiple \<- function(x) {\
+   outliers \<- array(TRUE,dim=dim(x))\
+   for (j in 1:ncol(x))\
+    {\
+    outliers[,j] \<- outliers[,j] && tukey.outlier(x[,j])\
+    }\
+outlier.vec \<- vector(length=nrow(x))\
+    for (i in 1:nrow(x))\
+    { outlier.vec[i] \<- all(outliers[i,]) } return(outlier.vec) }
+
+The above code is used to find the outliers based on each column, but
+the bug seems to be in the loop which finds outliers in each column.
+
+The line
+
+outliers[,j] \<- outliers[,j] && tukey.outlier(x[,j])
+
+shoukd be changes to
+
+outliers[,j] \<- outliers[,j] & tukey.outlier(x[,j])
+
+So the code becomes,
+
+tukey_multiple \<- function(x) {\
+   outliers \<- array(TRUE,dim=dim(x))\
+   for (j in 1:ncol(x))\
+    {\
+    outliers[,j] \<- outliers[,j] & tukey.outlier(x[,j])\
+    }\
+outlier.vec \<- vector(length=nrow(x))\
+    for (i in 1:nrow(x))\
+    { outlier.vec[i] \<- all(outliers[i,]) } return(outlier.vec) }
